@@ -1,0 +1,34 @@
+@if (!spec) {
+  <div class="empty">Ask me something in the chat and I’ll render it here.</div>
+} @else {
+  <div class="canvas">
+    <mat-card class="panel">
+      <mat-card-header>
+        <mat-card-title>{{ spec.title || (spec.type === 'table' ? 'Table' : spec.type === 'bar' ? 'Bars' : 'Distribution') }}</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        @if (spec.type === 'table') {
+          <table mat-table [dataSource]="rows" class="mat-elevation-z2 table">
+            @for (col of spec.columns; track col.id) {
+              <ng-container [matColumnDef]="col.id">
+                <th mat-header-cell *matHeaderCellDef>{{ col.header }}</th>
+                <td mat-cell *matCellDef="let row">{{ row[col.id] }}</td>
+              </ng-container>
+            }
+            <tr mat-header-row *matHeaderRowDef="displayed"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayed;"></tr>
+          </table>
+        } @else if (spec.type === 'bar') {
+          <div class="chart">
+            <canvas baseChart [type]="'bar'" [data]="barData" [options]="barOptions"></canvas>
+          </div>
+        } @else if (spec.type === 'pie') {
+          <div class="chart">
+            <canvas baseChart [type]="'pie'" [data]="pieData" [options]="pieOptions"></canvas>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+}
